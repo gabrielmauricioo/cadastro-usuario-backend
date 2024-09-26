@@ -24,6 +24,7 @@ app.post('/usuarios', async (req, res) => {
 
 // Defina outros endpoints...
 
-app.listen(3000, () => {
-  console.log('Servidor rodando na porta 3000');
+const PORT = process.env.PORT || 3000; // use a porta da Vercel ou 3000 localmente
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
