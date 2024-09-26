@@ -6,7 +6,9 @@ const prisma = new PrismaClient();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'https://cadastro-usuario-red.vercel.app/'
+}));
 
 app.post('/usuarios', async (req, res) => {
   await prisma.user.create({
