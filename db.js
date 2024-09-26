@@ -7,7 +7,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function connectToDatabase() {
   try {
     await client.connect();
-    const db = client.db('<dbname>'); // Substitua <dbname> pelo nome do seu banco de dados
+    const db = client.db('<users>'); // Substitua <dbname> pelo nome do seu banco de dados
     return db;
   } catch (error) {
     console.error("Erro ao conectar ao MongoDB:", error);
