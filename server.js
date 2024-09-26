@@ -1,62 +1,29 @@
+// server.js
 import express from 'express';
 import cors from 'cors';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL, // Acesso à variável de ambiente
-    },
-  },
-});
+import connectToDatabase from './db.js'; // Importa a função de conexão
 
 const app = express();
 app.use(express.json());
-app.use(cors({
-  origin: 'https://cadastro-usuario-red.vercel.app/'
-}));
+app.use(cors());
+
+let db;
+
+(async () => {
+  db = await connectToDatabase(); // Conecta ao banco de dados
+})();
 
 app.post('/usuarios', async (req, res) => {
-  await prisma.user.create({
-    data: {
-      email: req.body.email,
-      name: req.body.name,
-      age: req.body.age,
-    },
-  });
-
-  res.status(201).json(req.body);
+  try {
+    const result = await db.collection('usuarios').insertOne(req.body); // Usa a conexão com o banco de dados
+    res.status(201).json(result.ops[0]);
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao criar usuário', error });
+  }
 });
 
-app.get('/usuarios', async (req, res) => {
-  const users = await prisma.user.findMany();
+// Defina outros endpoints...
 
-  res.status(200).json(users);
+app.listen(3000, () => {
+  console.log('Servidor rodando na porta 3000');
 });
-
-app.put('/usuarios/:id', async (req, res) => {
-  await prisma.user.update({
-    where: {
-      id: req.params.id,
-    },
-    data: {
-      email: req.body.email,
-      name: req.body.name,
-      age: req.body.age,
-    },
-  });
-
-  res.status(201).json(req.body);
-});
-
-app.delete('/usuarios/:id', async (req, res) => {
-  await prisma.user.delete({
-    where: {
-      id: req.params.id,
-    },
-  });
-
-  res.status(200).json({ message: 'Usuário deletado com sucesso!S' });
-});
-
-app.listen(3000);
